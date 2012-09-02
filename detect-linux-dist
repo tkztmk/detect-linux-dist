@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+if [ "$(uname -s)" != "Linux" ]; then
+  echo 'seems not running on Linux. exit. ' >&2
+  exit 1
+fi
+_dist=
+if [ -f /etc/centos-release ] ; then
+  _dist='CentOS'
+elif [ -f /etc/redhat-release ] ; then
+  _dist=$(cat /etc/redhat-release | perl -ne '/^(\S*)/ and print $1 and exit')
+elif [ -f /etc/fedora-release ] ; then
+  _dist='Fedora'
+elif [ -f /etc/SUSE-release ] ; then
+  _dist=$(cat /etc/SUSE-release | perl -ne '/^(\S*)/ and print $1 and exit')
+elif [ -f /etc/debian_version ] ; then
+  _dist='Debian'
+elif [ -f /etc/lsb-release ] ; then
+  # Ubuntu. 
+  _dist=$(cat /etc/lsb-release | \
+    perl -ne '/DISTRIB_ID=(\S+)/ and print $1 and exit')
+elif [ -f /etc/arch-release ] ; then 
+  _dist='Arch'
+fi
+
+if [ -z $_dist ] ; then
+  echo 'Could not detect Linux Distribution. exit. ' >&2
+  exit 1
+fi
+echo -n $_dist
+
